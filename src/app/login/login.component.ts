@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Credentials } from 'src/app/dto/credentials'
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -10,27 +12,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
 
-  // Dummy data
-  private users: Credentials[] = [
-    {
-      username: "melanymero",
-      password: "password"
-    },
-    {
-      username: "kenethriera",
-      password: "password"
-    },
-    {
-      username: "ivonneminchala",
-      password: "password"
-    },
-    {
-      username: "danilopin",
-      password: "password"
-    }
-  ];
-
-  constructor(private router: Router, private dialogRef: MatDialogRef<LoginComponent>) { }
+  constructor(private router: Router, private dialogRef: MatDialogRef<LoginComponent>, private userService: UserService) { }
 
   usuarioLogin = new FormGroup({
     username: new FormControl('', Validators.required),
@@ -38,39 +20,18 @@ export class LoginComponent {
   });
 
   onSubmit() {
-    console.log(this.usuarioLogin.value);
+    let userToAuthenticate: Credentials = {
+      username: this.usuarioLogin.value.username,
+      password: this.usuarioLogin.value.password
+    }
 
-    if (this.validateUserCredentials(this.usuarioLogin.value.username, this.usuarioLogin.value.password)) {
-      console.log("Autenticado!");
-
-      // Se guarda el usuario en el localStorage
-      let authenticatedUser: Credentials = {
-        username: this.usuarioLogin.value.username,
-        password: this.usuarioLogin.value.password
-      }
-
-      localStorage.setItem("authenticatedUser", JSON.stringify(authenticatedUser));
-
+    if (this.userService.logIn(userToAuthenticate)) {
       this.router.navigate(['/cliente']);
       this.dialogRef.close();
     } else {
-      console.log("Error en las credenciales");
+      console.log("Ha ocurrido un error en la autenticación")
     }
   }
 
-  private validateUserCredentials(username: any, password: any): boolean {
-    for (const user of this.users) {
-      if (user.username == username && user.password == password) {
-        return true;
-      }
-    }
 
-    return false;
-  }
-
-}
-
-interface Credentials {
-  username: string | null | undefined
-  password: string | null | undefined
 }
