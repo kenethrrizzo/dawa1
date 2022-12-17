@@ -30,6 +30,7 @@ export class LoginComponent {
   }
 
   private validateUserCredentials(username: any, password: any): boolean {
+    // Datos para prueba
     const dummyUser = "Keneth";
     const dummyPassword = "Password";
 
