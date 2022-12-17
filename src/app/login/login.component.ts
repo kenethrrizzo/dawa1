@@ -10,18 +10,47 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
 
+  // Dummy data
+  private users: Credentials[] = [
+    {
+      username: "melanymero",
+      password: "password"
+    },
+    {
+      username: "kenethriera",
+      password: "password"
+    },
+    {
+      username: "ivonneminchala",
+      password: "password"
+    },
+    {
+      username: "danilopin",
+      password: "password"
+    }
+  ];
+
   constructor(private router: Router, private dialogRef: MatDialogRef<LoginComponent>) { }
 
   usuarioLogin = new FormGroup({
-    usuario: new FormControl('', Validators.required),
+    username: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required)
   });
 
   onSubmit() {
     console.log(this.usuarioLogin.value);
 
-    if (this.validateUserCredentials(this.usuarioLogin.value.usuario, this.usuarioLogin.value.password)) {
+    if (this.validateUserCredentials(this.usuarioLogin.value.username, this.usuarioLogin.value.password)) {
       console.log("Autenticado!");
+
+      // Se guarda el usuario en el localStorage
+      let authenticatedUser: Credentials = {
+        username: this.usuarioLogin.value.username,
+        password: this.usuarioLogin.value.password
+      }
+
+      localStorage.setItem("authenticatedUser", JSON.stringify(authenticatedUser));
+
       this.router.navigate(['/cliente']);
       this.dialogRef.close();
     } else {
@@ -30,15 +59,18 @@ export class LoginComponent {
   }
 
   private validateUserCredentials(username: any, password: any): boolean {
-    // Datos para prueba
-    const dummyUser = "Keneth";
-    const dummyPassword = "Password";
-
-    if (dummyUser != username && dummyPassword != password) {
-      return false;
+    for (const user of this.users) {
+      if (user.username == username && user.password == password) {
+        return true;
+      }
     }
 
-    return true;
+    return false;
   }
 
+}
+
+interface Credentials {
+  username: string | null | undefined
+  password: string | null | undefined
 }
