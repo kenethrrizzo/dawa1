@@ -29,6 +29,8 @@ export class LoginComponent {
       this.router.navigate(['/cliente']);
       this.dialogRef.close();
     } else {
+      this.router.navigate(['/error']);
+      this.dialogRef.close();
       console.log("Ha ocurrido un error en la autenticación")
     }
   }
