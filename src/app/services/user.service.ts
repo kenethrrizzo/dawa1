@@ -6,6 +6,8 @@ import { Credentials } from 'src/app/dto/credentials'
 })
 export class UserService {
 
+  private localStorageCredentialsKey = "authenticatedUser";
+
   // Dummy data
   private users: Credentials[] = [
     {
@@ -32,12 +34,29 @@ export class UserService {
     if (this.validateUserCredentials(credentials.username, credentials.password)) {
       console.log("Autenticado!");
 
-      localStorage.setItem("authenticatedUser", JSON.stringify(credentials));
+      localStorage.setItem(this.localStorageCredentialsKey, JSON.stringify(credentials));
 
       return true;
     } else {
       return false;
     }
+  }
+
+  logOut() {
+    localStorage.removeItem(this.localStorageCredentialsKey);
+  }
+
+  getLoggedUser(): string {
+    if (!this.userIsLogged()) {
+      return "";
+    }
+
+    let user: Credentials = JSON.parse(localStorage.getItem(this.localStorageCredentialsKey)!);
+    return user.username!;
+  }
+
+  private userIsLogged(): boolean {
+    return localStorage.getItem(this.localStorageCredentialsKey) != null;
   }
 
   private validateUserCredentials(username: any, password: any): boolean {
